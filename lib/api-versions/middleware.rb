@@ -22,7 +22,7 @@ module ApiVersions
         end
       end
 
-      env['HTTP_ACCEPT'] = accepts.join(',')
+      env['HTTP_ACCEPT'] = accepts.join(',') if accepts.present?
       @app.call(env)
     end
   end
