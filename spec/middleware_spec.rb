@@ -24,16 +24,26 @@ describe ApiVersions::Middleware do
       response.last.should == "text/plain,application/json,application/vnd.myvendor+json;version=1,text/html,application/xml,application/vnd.myvendor+xml"
     end
 
-    it "should add a default vendor accept to a nil Accept header" do
-      request = Rack::MockRequest.env_for("/", lint: true, fatal: true)
-      response = described_class.new(app).call(request).last
-      response.last.should == "application/json,application/vnd.#{ApiVersions::VersionCheck.vendor_string}+json"
+    context "when request path contains api prefix" do
+      it "should add a default vendor accept to a nil Accept header" do
+        request = Rack::MockRequest.env_for("/api/dummy.json", lint: true, fatal: true)
+        response = described_class.new(app).call(request).last
+        response.last.should == "application/json,application/vnd.#{ApiVersions::VersionCheck.vendor_string}+json"
+      end
+
+      it "should add a default vendor accept to an empty Accept header" do
+        request = Rack::MockRequest.env_for("/api/dummy.json", "HTTP_ACCEPT" => '', lint: true, fatal: true)
+        response = described_class.new(app).call(request).last
+        response.last.should == "application/json,application/vnd.#{ApiVersions::VersionCheck.vendor_string}+json"
+      end
     end
 
-    it "should add a default vendor accept to an empty Accept header" do
-      request = Rack::MockRequest.env_for("/", "HTTP_ACCEPT" => '', lint: true, fatal: true)
-      response = described_class.new(app).call(request).last
-      response.last.should == "application/json,application/vnd.#{ApiVersions::VersionCheck.vendor_string}+json"
+    context "when request path dose not contain api prefix" do
+      it "should not add a default vendor accept" do
+        request = Rack::MockRequest.env_for("/", lint: true, fatal: true)
+        response = described_class.new(app).call(request).last
+        response.last.should_not == "application/json,application/vnd.#{ApiVersions::VersionCheck.vendor_string}+json"
+      end
     end
   end
 end
