@@ -22,7 +22,11 @@ module ApiVersions
         end
       end
 
-      env['HTTP_ACCEPT'] = accepts.join(',') if accepts.present?
+      if accepts.present?
+        http_accept = accepts.join(',') 
+        http_accept.gsub!(/version=\d/, "version=#{env['rack.request.query_hash']['api_version']}") if env['rack.request.query_hash'].key?('api_version')
+        env['HTTP_ACCEPT'] = http_accept 
+      end
       @app.call(env)
     end
   end
