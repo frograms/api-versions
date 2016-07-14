@@ -1,7 +1,7 @@
 module ApiVersions
   class VersionCheck
     class << self
-      attr_accessor :default_version, :vendor_string
+      attr_accessor :default_version, :max_version, :vendor_string
     end
 
     def initialize(args = {})

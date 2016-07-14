@@ -12,6 +12,11 @@ module ApiVersions
 
     def version(version_number, &block)
       VersionCheck.default_version ||= version_number
+      VersionCheck.max_version ||= VersionCheck.default_version
+
+      if VersionCheck.max_version < version_number
+        VersionCheck.max_version = version_number
+      end
 
       constraints VersionCheck.new(version: version_number) do
         scope({ module: "v#{version_number}" }, &block)
