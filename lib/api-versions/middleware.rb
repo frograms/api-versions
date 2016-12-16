@@ -25,7 +25,7 @@ module ApiVersions
       if accepts.present?
         http_accept = accepts.join(',')
 
-        current_version = http_accept[/version=(\d)/, 1]
+        current_version = http_accept[/version=(\d+)/, 1]
         current_version = current_version.nil? ? VersionCheck.default_version : current_version.to_i
 
         version = if env['rack.request.query_hash'].try(:key?, 'api_version')
@@ -36,7 +36,7 @@ module ApiVersions
           current_version
         end
 
-        http_accept.gsub!(/version=\d/, "version=#{version}")
+        http_accept.gsub!(/version=\d+/, "version=#{version}")
         env['HTTP_ACCEPT'] = http_accept
       end
       @app.call(env)
