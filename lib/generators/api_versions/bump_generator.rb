@@ -10,8 +10,10 @@ module ApiVersions
         end
 
         @highest_version = @controllers.map do |controller|
-          controller.match(/api\/v(\d+?)\//)[1]
+          controller.match(/api\/v(\d+?)\//)[1].to_i
         end.max
+
+        puts max
 
         @controllers.keep_if { |element| element =~ /api\/v#{@highest_version}\// }
       end
